@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <link href='https://fonts.googleapis.com/css?family=Nobile:700,400' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Gafata|Open+Sans:300' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="style.css">
+<title>Doge Dodge</title>
+
+<div id="myModal" class="modal">
+                <div class="modal-content">
+                    <h4 id="score"> Memes Caught: </h4>
+                                <h4>Your doge fell in a blackhole</h4>
+                              <img onclick="resetGame()" id="sadDoge" style="margin-left: 25%" src="images/tenor.gif">
+                              <h4>Click on sad doge to continue</h4>
+                  <span class="close">&times;</span>
+                </div>
+              </div>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+</style>
+<div class="video-container" id="welcome">
+	   <video autoplay loop muted>
+            <source src="images/space.mp4" type="video/mp4">
+		     Your browser does not support the video tag.
+	   </video>
+     <div class="overlay-desc" id="overlay">
+        <h3 id="HighScore" >High Score: </span></h3>
+        <h2>Welcome to</h2>
+        <h1>Doge Dodge</h1>
+        <img src="images/doge.png">
+        <button id="startBtn" class="button" style="top:60%;">Play</button>
+        <button id="HowTo" class="button" style="top: 70%;">Instructions</button>
+     </div>
+    </div>
+    <div class="overlay-desc" id="Instructions" style="display: none">
+            <p>Use the arrow keys to move the doge <img src="images/doge.png"></p>
+            <p>Collect memes to get high score <img src="images/monster.png"></p>
+            <p>Avoid the blackholes <img height="50" width="50" src="images/blackhole.png"></p>
+            <p>Press m to turn the music on and off <img id="img2" height="50" width="50"src="images/musicnotes.png"></p>
+            <p>Click anywhere to return to menu  <img id="img2" height="50" width="50"src="images/cursor.png"></p>
+     </div>
+	</div>
+</head>
+<body>
+</header>
+<body onload="storeHighScore();">
+
+                <ul id="container"></ul>
+            
+                <script src="js/startScreen.js"></script>
+                <script src="js/game.js"></script>
+            </body>
+
+</body>
+</html>
+
+
