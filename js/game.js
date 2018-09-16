@@ -9,7 +9,7 @@ var gameStart = false;
  document.addEventListener('keydown', function(event) {
 	//Enter pressed 
     if(event.keyCode == 27) {
-		endGame();
+		Return();
 	}
 	//m key pressed to turn music on and off 
     if(event.keyCode == 77) {
@@ -134,6 +134,12 @@ ctx.canvas.width  = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 document.body.appendChild(canvas);
 
+var livesHeader = document.createElement("h3");
+canvas.appendChild(livesHeader);
+var node = document.createTextNode("Lives:");
+livesHeader.appendChild(node);
+
+
 //x and y are coordinates, speed is the speed determined by FPS
 //use movement to determine which way the player goes
 var meme = function(x,y,speed,movement){
@@ -151,6 +157,7 @@ var monster2 = new meme(10,252,0.3,3);
 //blackhole object can behave like a meme object
 var blackhole = new meme(10,252,0.3,0);
 var monstersCaught = 0;
+var livesLeft = 3;
 //put objects in list for easy manipulation
 var holes = [blackhole];
 var memes=[monster, monster2];
@@ -174,11 +181,16 @@ var reset = function () {
 	randomPlacement(holes);
 };
 
-// Reset the game when the doge catches a meme
+// Reset when the doge catches a meme
 var clearMeme = function (z) {
 		memes[z].x = 32 + (Math.random() * (canvas.width - 64));
 		memes[z].y = 32 + (Math.random() * (canvas.height - 64));
 };
+
+//remove item from array
+var removeItem = function (array, index){
+	if (index !== -1) array.splice(index, 1);
+}
 
 //randomly place object meme
 var randomPlacement = function(memes){
@@ -218,7 +230,7 @@ var modal = document.getElementById('myModal');
 modal.addEventListener('keydown', function(event) {
 	//Enter pressed 
     if(event.keyCode == 13) {
-		endGame();
+		Return();
 	}
 });
 
@@ -349,8 +361,8 @@ var update = function (modifier) {
   for(var i=0;i<holes.length;i++){
 	if (collideswith(doge,holes[i])
 ) {
-	document.getElementById("score").innerHTML = "Memes Caught: " + monstersCaught;
-	endGame();
+	loseLife();
+	removeItem(holes,i);
 }
   }
  }
@@ -399,6 +411,7 @@ var render = function () {
 		};
 
 		displayScore(monstersCaught);
+		displayLives(livesLeft);
 		storeHighScore();
 };
 
@@ -420,11 +433,17 @@ var resetGame = function(){
 }
 
 //lose game
-var endGame= function () {
+var loseLife= function () {
+	if(livesLeft == 0){
 	//display lose screen
+	document.getElementById("score").innerHTML = "Memes Caught: " + monstersCaught;
 	modal.style.display = "block";
 	//get rid of doge since he is in a blackhole
 	dogeReady = false;
+	}
+	else{
+		livesLeft--;
+	}
 };
 
 //start game
@@ -444,6 +463,12 @@ var displayScore= function (monstersCaught) {
 	ctx.textBaseline = "top";
 	//ctx.fillText("Memes caught: " + memes[1].speed, 32, 32);
 	ctx.fillText("Memes caught: " + monstersCaught, 32, 32);
+};
+
+//display score
+var displayLives= function () {
+    // Display lives left
+	ctx.fillText("Lives: " + livesLeft, window.innerWidth - 180, 32);
 };
 
 // Cross-browser support for requestAnimationFrame
