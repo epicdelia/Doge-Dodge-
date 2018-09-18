@@ -194,14 +194,22 @@ maxMemes = 10;
 //see if we should make the game harder
 var checktoGenerate = function(time){
 	if(nowGenerate > 100){
-		if(0<monstersCaught<20){
+		if(0<monstersCaught<10){
 			if(memes.length < maxMemes){
 			generateMemes(holes,1);
 			generateMemes(memes,2);
 			}
 		}
+		if(10<monstersCaught<20){
+			modal.style.display = "block";
+			if(memes.length < maxMemes){
+			generateMemes(holes,2);
+			generateMemes(memes,3);
+			}
+		}
 		if(20<monstersCaught<30){
 			generateMemes(holes,2);
+			modal.style.display = "block";
 		}
 		//make it impossible after 30 lol 
 		else{

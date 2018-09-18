@@ -9,12 +9,19 @@
 <div id="myModal" class="modal">
                 <div class="modal-content">
                     <h4 id="score"> Memes Caught: </h4>
-                                <h4>Your doge fell in a blackhole</h4>
+                                <h4 id="score">Your doge fell in a blackhole</h4>
                               <img onclick="resetGame()" id="sadDoge" style="margin-left: 25%" src="images/tenor.gif">
                               <h4>Click on sad doge to continue</h4>
                   <span class="close">&times;</span>
                 </div>
               </div>
+
+<div id="newlevel" class="modal">
+  <div class="modal-content">
+      <h4 id"leveltitle"> Level: </h4>
+    <span class="close">&times;</span>
+  </div>
+</div>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -47,8 +54,6 @@
 <body onload="storeHighScore();">
 
                 <ul id="container"></ul>
-            
-                <script src="js/startScreen.js"></script>
                 <script src="js/game.js"></script>
             </body>
 

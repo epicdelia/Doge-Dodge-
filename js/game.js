@@ -1,5 +1,9 @@
 //background music 
 var audio = new Audio('Thang.mp3');
+var prev_counter = 0;
+var counter = 0;
+var monstersCaught = 0;
+var livesLeft = 3;
 
 //Initialize variables 
 var multiplier = 1;
@@ -22,6 +26,7 @@ function setUp() {
 	storeHighScore();
 	playMusic(audio);
 }
+
 function storeHighScore() {
 	//if local storage supported 
     if(typeof(Storage) !== "undefined") {
@@ -55,6 +60,8 @@ var main = function () {
 	//make objects move around 
 	drawMovement(memes);
 	drawMovement(holes);
+	drawMovement(extraLives);
+
 	}
 };
 
@@ -93,6 +100,12 @@ Return.onclick = function () {
 };
 
 //Create Images 
+var bulletsReady = false;
+var bulletImg = new Image();
+bulletImg.src = "images/meme1.jpg";
+bulletImg.onload = function () {
+	bulletsReady = true;
+};
 
 // Background image
 var bgReady = false;
@@ -101,6 +114,14 @@ bgImage.onload = function () {
 	bgReady = true;
 };
 bgImage.src = "images/background.png";
+
+// Extra lives 	
+var heartReady = false;
+var heartImage = new Image();
+heartImage.onload = function () {
+	heartReady = true;
+};
+heartImage.src = "images/heart.png";
 
 // doge image
 var dogeReady = false;
@@ -145,20 +166,108 @@ livesHeader.appendChild(node);
 var meme = function(x,y,speed,movement){
 	this.x =x;
 	this.y = y;
+
 	this.speed = speed;
 	this.movement = movement;
+	this.draw = function(){
+        ctx.drawImage(bulletImg,this.x,this.y,this.w,this.h);
+	}
+
+	// this.update = function(){
+	// 	this.y -= this.speed;
+	// 	if(this.y<=0){
+	// 		this.state = "inactive"
+	// 	}
+	// }
+}
+
+var hole = function(x,y,speed, active){
+	this.x =x;
+	this.y = y;
+	this.speed = speed;
+	this.active =active;
+}
+
+//doge object is different from the memes
+doge = {
+	x : 300,
+	y : 50,
+	w : 50,
+	h : 50,
+	speed : 256,
+	bullets : [],
+	
+	shoot : function(){
+		console.log("Shooting a bullet");
+
+		if(counter-prev_counter>=0){
+
+			var b = new bullet(this.x + (this.w)/2, this.y,10);
+			this.bullets.push(b);
+			prev_counter = counter;
+
+			holes.forEach(function(hole){
+
+				//if(isColliding(this.bullets[this.bullets.length()-1],enemy)){
+				if(isCollidingWithBullet(b,hole)){
+					this.state = "inactive";
+					var index = holes.indexOf(hole);
+					holes.splice(index,1);
+					}
+				});
+
+		}
+		
+	}
+
+};
+
+
+
+function isCollidingWithBullet(a,b){
+		return !(
+			((a.y + a.h) < (b.y)) ||
+			(a.y > (b.y + 102)) ||
+			((a.x + a.w) < b.x) ||
+			(a.x > (b.x + 102))
+		);
+}
+
+// //create first game objects 
+// var doge = new meme(100,256,256,9);
+
+// Class defined for a bullet
+function bullet(x,y,speed){
+	this.x = x;
+	this.y = y;
+	this.w = 20;
+	this.h = 60;
+	this.state = "active"
+	this.speed = speed;
+
+	this.draw = function(){
+        ctx.drawImage(bulletImg,this.x,this.y,this.w,this.h);
+	}
+
+	this.update = function(){
+	 	this.y -= this.speed;
+		if(this.y<=0){
+			this.state = "inactive"
+		}
+	}
 
 }
-//create first game objects 
-var doge = new meme(100,256,256,9);
-var monster = new meme(100,256,1,3);
-var monster2 = new meme(10,252,0.3,3);
 
+//initialize some objects 
+var monster = new meme(100,256,1,3);
+var extralife = new meme(100,256,1,3);
+
+var monster2 = new meme(10,252,0.3,3);
 //blackhole object can behave like a meme object
-var blackhole = new meme(10,252,0.3,0);
-var monstersCaught = 0;
-var livesLeft = 3;
+var blackhole = new meme(10,252,1,0);
+
 //put objects in list for easy manipulation
+var extraLives = [extralife];
 var holes = [blackhole];
 var memes=[monster, monster2];
 
@@ -181,16 +290,16 @@ var reset = function () {
 	randomPlacement(holes);
 };
 
-// Reset when the doge catches a meme
-var clearMeme = function (z) {
-		memes[z].x = 32 + (Math.random() * (canvas.width - 64));
-		memes[z].y = 32 + (Math.random() * (canvas.height - 64));
-};
-
 //remove item from array
 var removeItem = function (array, index){
 	if (index !== -1) array.splice(index, 1);
 }
+
+// Reset when the doge catches a meme
+var clearMeme = function (z) {
+	memes[z].x = 32 + (Math.random() * (canvas.width - 64));
+	memes[z].y = 32 + (Math.random() * (canvas.height - 64));
+};
 
 //randomly place object meme
 var randomPlacement = function(memes){
@@ -198,7 +307,6 @@ var randomPlacement = function(memes){
 		memes[i].x = 32 + (Math.random() * (canvas.width - 64));
 		memes[i].y = 32 + (Math.random() * (canvas.height - 64));
 	  }
-
 }
 
 nowGenerate = 0;
@@ -214,6 +322,8 @@ var checktoGenerate = function(time){
 		}
 		if(20<monstersCaught<30){
 			generateMemes(holes,2);
+			//give doge ability to shoot 
+			canshoot = true; 
 		}
 		//make it impossible after 30 lol 
 		else{
@@ -326,25 +436,33 @@ var update = function (modifier) {
 	if (39 in keysDown) { // Player holding right
 		doge.x += doge.speed * modifier;
 	}
+	if (32 in keysDown) { // Player pressed space 
+		doge.shoot();
+	}
+
 	offScreen(doge,canvas);
 
 	for(var i=0;i<memes.length;i++){
 		offScreen(memes[i],canvas);
+		ctx.drawImage(memeImage, memes[i].x, memes[i].y);
 	  }
 
 	  for(var i=0;i<holes.length;i++){
 		offScreen(holes[i],canvas);
-	  }
-
-	  for(var i=0;i<holes.length;i++){
 		ctx.drawImage(blackholeImage, holes[i].x, holes[i].y);
 	  }
-
-	for(var i=0;i<memes.length;i++){
-		ctx.drawImage(memeImage, memes[i].x, memes[i].y);
+	  for(var i=0;i<extraLives.length;i++){
+		offScreen(extraLives[i],canvas);
+		ctx.drawImage(heartImage, extraLives[i].x, extraLives[i].y,10,10);
 	  }
 
 	  checkCollisions();
+
+	  doge.bullets.forEach(function(bullet){
+		bullet.update();
+
+	});
+
 };
 
  function checkCollisions(){
@@ -363,6 +481,13 @@ var update = function (modifier) {
 ) {
 	loseLife();
 	removeItem(holes,i);
+}
+  }
+  for(var i=0;i<extraLives.length;i++){
+	if (collideswith(doge,extraLives[i])
+) {
+	livesLeft ++;
+	removeItem(extraLives,i)
 }
   }
  }
@@ -398,15 +523,23 @@ var render = function () {
 	}
 
 	//easier to call function for rendering multiple objects of same type
-	renderMultipleObjects(memeReady,memeImage,memes)
-	renderMultipleObjects(blackholeReady,blackholeImage,holes)
+	renderMultipleObjects(memeReady,memeImage,memes,memeImage.width,memeImage.height)
+	renderMultipleObjects(blackholeReady,blackholeImage,holes,blackholeImage.width,blackholeImage.height)
+	renderMultipleObjects(heartReady,heartImage,extraLives,40,40)
+
+		//Drawing the bullets
+	doge.bullets.forEach(function(bullet){
+			bullet.draw();
+		});
+	
+	counter ++;
 
 	};
 
-	var renderMultipleObjects = function(ifReady, Image, list){
+	var renderMultipleObjects = function(ifReady, Image, list,w,h){
 		if (ifReady) {
 			for(var i=0;i<list.length;i++){
-				ctx.drawImage(Image, list[i].x, list[i].y);
+				ctx.drawImage(Image, list[i].x, list[i].y,w,h);
 			  }
 		};
 
@@ -445,6 +578,11 @@ var loseLife= function () {
 		livesLeft--;
 	}
 };
+
+var halveImage = function(img){
+	img.width = img.width/2;
+	img.height = img.height/2;
+}
 
 //start game
 var startGame= function () {
