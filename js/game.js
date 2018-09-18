@@ -4,6 +4,7 @@ var prev_counter = 0;
 var counter = 0;
 var monstersCaught = 0;
 var livesLeft = 3;
+var shield = true;
 
 //Initialize variables 
 var multiplier = 1;
@@ -115,6 +116,22 @@ bgImage.onload = function () {
 };
 bgImage.src = "images/background.png";
 
+// Background image
+var bgReady1 = false;
+var bgImage1 = new Image();
+bgImage1.onload = function () {
+	bgReady1 = true;
+};
+bgImage1.src = "images/background.png";
+
+// Background image
+var bgReady2 = false;
+var bgImage2 = new Image();
+bgImage2.onload = function () {
+	bgReady2 = true;
+};
+bgImage2.src = "images/background.png";
+
 // Extra lives 	
 var heartReady = false;
 var heartImage = new Image();
@@ -130,6 +147,15 @@ dogeImage.onload = function () {
 	dogeReady = true;
 };
 dogeImage.src = "images/doge.png";
+
+
+// shield image
+var shieldReady = false;
+var shieldImage = new Image();
+shieldImage.onload = function () {
+	shieldReady = true;
+};
+shieldImage.src = "images/shield.png";
 
 // Meme image
 var memeReady = false;
@@ -181,6 +207,18 @@ var meme = function(x,y,speed,movement){
 	// }
 }
 
+
+var obj = function(x,y,speed,movement,img){
+	this.x =x;
+	this.y = y;
+	this.img = img;
+
+	this.speed = speed;
+	this.movement = movement;
+	// this.draw = function(){
+    //     ctx.drawImage(img,this.x,this.y,this.w,this.h);
+	// }
+}
 var hole = function(x,y,speed, active){
 	this.x =x;
 	this.y = y;
@@ -260,14 +298,15 @@ function bullet(x,y,speed){
 
 //initialize some objects 
 var monster = new meme(100,256,1,3);
-var extralife = new meme(100,256,1,3);
+var extralife = new obj(100,256,1,3,heartImage);
+var shield = new obj(50,69,1,3,shieldImage);
 
 var monster2 = new meme(10,252,0.3,3);
 //blackhole object can behave like a meme object
 var blackhole = new meme(10,252,1,0);
 
 //put objects in list for easy manipulation
-var extraLives = [extralife];
+var extraLives = [extralife,shield];
 var holes = [blackhole];
 var memes=[monster, monster2];
 
@@ -453,7 +492,7 @@ var update = function (modifier) {
 	  }
 	  for(var i=0;i<extraLives.length;i++){
 		offScreen(extraLives[i],canvas);
-		ctx.drawImage(heartImage, extraLives[i].x, extraLives[i].y,10,10);
+		ctx.drawImage(extraLives[i].img, extraLives[i].x, extraLives[i].y,10,10);
 	  }
 
 	  checkCollisions();
@@ -464,6 +503,21 @@ var update = function (modifier) {
 	});
 
 };
+
+function drawCircle(x,y,radius, width){
+	ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2, true); // Outer circle
+	ctx.moveTo(110, 75);
+	ctx.lineWidth = width;
+	ctx.strokeStyle="#0000FF";
+	ctx.stroke();
+}
+function clearCircle( x , y , r ){
+    for( var i = 0 ; i < Math.round( Math.PI * r ) ; i++ ){
+        var angle = ( i / Math.round( Math.PI * r )) * 360;
+        ctx.clearRect( x , y , Math.sin( angle * ( Math.PI / 180 )) * r , Math.cos( angle * ( Math.PI / 180 )) * r );
+    }
+}
 
  function checkCollisions(){
 	for(var i=0;i<memes.length;i++){
@@ -479,15 +533,27 @@ var update = function (modifier) {
   for(var i=0;i<holes.length;i++){
 	if (collideswith(doge,holes[i])
 ) {
-	loseLife();
+	if(shield){
+		console.log("SHIELD ON");
+		clearCircle(doge.x+32,doge.y+32,32,8);
+		shield = false;
+	}
+	else{
+		loseLife();
+	}
 	removeItem(holes,i);
 }
   }
   for(var i=0;i<extraLives.length;i++){
 	if (collideswith(doge,extraLives[i])
 ) {
-	livesLeft ++;
-	removeItem(extraLives,i)
+	if(extraLives[i].img == heartImage){
+		livesLeft ++;
+	}
+	else{
+		shield =true;
+	}
+	removeItem(extraLives,i);
 }
   }
  }
@@ -525,13 +591,15 @@ var render = function () {
 	//easier to call function for rendering multiple objects of same type
 	renderMultipleObjects(memeReady,memeImage,memes,memeImage.width,memeImage.height)
 	renderMultipleObjects(blackholeReady,blackholeImage,holes,blackholeImage.width,blackholeImage.height)
-	renderMultipleObjects(heartReady,heartImage,extraLives,40,40)
+	renderMultipleObjectswithImage(heartReady,extraLives,40,40)
 
 		//Drawing the bullets
 	doge.bullets.forEach(function(bullet){
 			bullet.draw();
 		});
-	
+	if (shield){
+		drawCircle(doge.x+32,doge.y+32,32,8);
+	}
 	counter ++;
 
 	};
@@ -547,6 +615,14 @@ var render = function () {
 		displayLives(livesLeft);
 		storeHighScore();
 };
+
+var renderMultipleObjectswithImage = function(ifReady, list,w,h){
+	if (ifReady) {
+		for(var i=0;i<list.length;i++){
+			ctx.drawImage(list[i].img, list[i].x, list[i].y,w,h);
+		  }
+		}
+	};
 
 // Define some functions for clean code
 
