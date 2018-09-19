@@ -14,6 +14,61 @@
     margin: 0 auto;
 }
 
+table.blueTable {
+  border: 1px solid #1C6EA4;
+  width: 80%;
+  text-align: center;
+  border-collapse: collapse;
+  color: #ffffff;
+}
+table.blueTable td, table.blueTable th {
+  border: 1px solid #AAAAAA;
+  padding: 1px 2px;
+}
+table.blueTable tbody td {  
+  font-family: 'Nobile', sans-serif;
+  font-weight: bold;
+  font-size: 12px;
+  color: #ffffff;
+}
+table.blueTable tr:nth-child(even) {
+  background:transparent;
+}
+table.blueTable tr:nth-child(odd) {
+  background:transparent;
+}
+table.blueTable thead {
+  background: #AFB4F0;
+  background: -moz-linear-gradient(top, #c3c7f4 0%, #b7bbf1 66%, #AFB4F0 100%);
+  background: -webkit-linear-gradient(top, #c3c7f4 0%, #b7bbf1 66%, #AFB4F0 100%);
+  background: linear-gradient(to bottom, #c3c7f4 0%, #b7bbf1 66%, #AFB4F0 100%);
+  border-bottom: 2px solid #4A4A4A;
+}
+table.blueTable thead th {
+  font-size: 13px;
+  font-weight: 10px;
+  font-family: 'Nobile', sans-serif;
+  color: #ffffff;
+  text-align: center;
+  border-left: 2px solid #9EFFC4;
+}
+table.blueTable thead th:first-child {
+  border-left: none;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+img{
+  border-collapse: collapse;
+}
+
+.icon{
+    width:30px;
+    height:30px;  
+}
 html, body {margin: 0; height: 100%; overflow: hidden}
 
 .button:hover {
@@ -40,6 +95,30 @@ video {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+available{
+  filter: alpha(opacity=50); /* For IE8 and earlier */
+}
+
+.overlay-items{
+  background: rgba(0,0,0,0);
+  position: absolute;
+  top: 0; right: 20%; bottom: 0; left: 20%;
+  display: flex;
+  align-items: bottom;
+  justify-content: center;
+  width: 60%;
+}
+#container canvas, #overlay {
+  position: absolute;
+}
+canvas {
+  border: 1px solid black;
+}
+
+items {
+  position: relative;
 }
 h1 {
   color: white;

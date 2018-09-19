@@ -15,17 +15,39 @@
                   <span class="close">&times;</span>
                 </div>
               </div>
-
-<div id="newlevel" class="modal">
-  <div class="modal-content">
-      <h4 id"leveltitle"> Level: </h4>
-    <span class="close">&times;</span>
-  </div>
-</div>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 </style>
+<div id="newlevel" class="modal">
+    <div class="modal-content">
+        <h4 id"leveltitle"> Level: </h4>
+      <span class="close">&times;</span>
+    </div>
+  </div>
+  <div  class="overlay-items" class = "items">
+      <table class = "blueTable">
+        <tr>
+          <th>Items to Buy</th>
+          <th id ="shield">Shield<img class ="icon" src="images/shield.png"></th>
+          <th id ="heart">Extra life<img class ="icon" src="images/heart.png"></th>
+          <th id ="blaster">Blackhole Blaster<img class ="icon" src="images/blaster.png"></th>
+        </tr>
+  
+        <tr>
+          <td>Cost</td>
+          <td id="shieldcost">3 memes</td>
+          <td id="lifecost">3 memes</td>
+          <td id="blastercost">5 memes</td>
+        </tr>
+        <tr>
+          <td>Press Key</td>
+          <td>Press w</td>
+          <td>Press q</td>
+          <td>Press e</td>
+        </tr>
+      </table>
+    </div>  
 <div class="video-container" id="welcome">
 	   <video autoplay loop muted>
             <source src="images/space.mp4" type="video/mp4">
@@ -42,9 +64,11 @@
     </div>
     <div class="overlay-desc" id="Instructions" style="display: none">
             <p>Use the arrow keys to move the doge <img src="images/doge.png"></p>
+            <p>Avoid blackholes to keep doge alive<img height="50" width="50" src="images/blackhole.png"></p>
             <p>Collect memes to get high score <img src="images/monster.png"></p>
-            <p>Avoid the blackholes <img height="50" width="50" src="images/blackhole.png"></p>
+            <p>Buy items with memes using keystrokes <img height="50" width="50" src="images/blaster.png"></p>
             <p>Press m to turn the music on and off <img id="img2" height="50" width="50"src="images/musicnotes.png"></p>
+            <p>Press p to pause and unpause game <h style="font-weight: bolder">|p|</h></p>
             <p>Click anywhere to return to menu  <img id="img2" height="50" width="50"src="images/cursor.png"></p>
      </div>
 	</div>

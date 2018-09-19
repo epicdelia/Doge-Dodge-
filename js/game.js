@@ -4,7 +4,14 @@ var prev_counter = 0;
 var counter = 0;
 var monstersCaught = 0;
 var livesLeft = 3;
-var shield = true;
+var shield = false;
+var blaster = false;
+var shieldcost = 5;
+var lifecost = 4;
+var blastercost =3;
+paused = false;
+mincost = 1;
+maxcost =5;
 
 //Initialize variables 
 var multiplier = 1;
@@ -13,14 +20,67 @@ var gameStart = false;
 //esc and music keys 
  document.addEventListener('keydown', function(event) {
 	//Enter pressed 
-    if(event.keyCode == 27) {
+	var key = event.keyCode;
+    if(key== 27) {
 		Return();
 	}
 	//m key pressed to turn music on and off 
-    if(event.keyCode == 77) {
+    if(key == 77) {
        	playMusic(audio);
-    }
+	}
+	if (key == 87) { // Player presses w
+		buyitem(shieldcost,shieldImage,extraLives);
+	}
+	if (key ==81) { // Player pressed q
+		buyitem(lifecost,heartImage,extraLives);
+		console.log("buying life");
+	}
+	if (key ==69) { // Player pressed e
+		buyitem(blastercost,bulletImg,extraLives);
+		console.log("buying gun");
+	}
+	if (key === 80)// p key
+	{
+		togglePause();
+	}
+	if (key === 13)// Enter
+	{
+		console.log("Enter");
+		document.location.reload();
+	}
+	
 });
+
+function buyitem(cost,image,list){
+	if(blaster){
+		blaster = false;
+	}
+	if(shield){
+		shield = false;
+	}
+	if(monstersCaught >= cost){
+	   monstersCaught = monstersCaught - cost;
+	   var item = new obj(50,69,1,3,image);
+	   list.push(item);
+	}
+	else{
+		console.log("MUST CATCH MORE");
+	}
+   
+ }
+
+
+function changeCost(){
+	shieldcost = Math.floor((Math.random() * maxcost) + mincost);
+	lifecost = Math.floor((Math.random() * maxcost) + mincost);
+	blastercost = Math.floor((Math.random() * maxcost) + mincost);
+
+	document.getElementById("lifecost").innerHTML = lifecost + "memes";
+ }
+
+ function chnageInnerHtml(id,newText){
+	document.getElementById(id).innerHTML = newText;
+ }
 
 //get highscore and play music
 function setUp() {
@@ -51,17 +111,18 @@ var main = function () {
 	if (gameStart) {
 		var now = Date.now();
 	var delta = now - then;
-	update(delta / 1000);
-	render();
+	if(!paused){
+		update(delta / 1000);
+		render();
+			//check if we should generate more objects to make harder
+		checktoGenerate(delta);
+		//make objects move around 
+		drawMovement(memes);
+		drawMovement(holes);
+		drawMovement(extraLives);
+	}
 	then = now;
-	requestAnimationFrame(main);	
-
-	//check if we should generate more objects to make harder
-	checktoGenerate(delta);
-	//make objects move around 
-	drawMovement(memes);
-	drawMovement(holes);
-	drawMovement(extraLives);
+	requestAnimationFrame(main);
 
 	}
 };
@@ -103,7 +164,7 @@ Return.onclick = function () {
 //Create Images 
 var bulletsReady = false;
 var bulletImg = new Image();
-bulletImg.src = "images/meme1.jpg";
+bulletImg.src = "images/blaster.png";
 bulletImg.onload = function () {
 	bulletsReady = true;
 };
@@ -123,7 +184,7 @@ bgImage1.onload = function () {
 	bgReady1 = true;
 };
 bgImage1.src = "images/background.png";
-
+                                           
 // Background image
 var bgReady2 = false;
 var bgImage2 = new Image();
@@ -186,6 +247,26 @@ canvas.appendChild(livesHeader);
 var node = document.createTextNode("Lives:");
 livesHeader.appendChild(node);
 
+bw = canvas.width;
+bh = canvas.height;
+p = 10;
+
+function drawBoard(){
+	for (var x = 0; x <= bw; x += 40) {
+		ctx.moveTo(0.5 + x + p, p);
+		ctx.lineTo(0.5 + x + p, bh + p);
+	}
+	
+	
+	for (var x = 0; x <= bh; x += 40) {
+		ctx.moveTo(p, 0.5 + x + p);
+		ctx.lineTo(bw + p, 0.5 + x + p);
+	}
+	
+	ctx.strokeStyle = "#0000FF";
+	ctx.stroke();
+	}
+	
 
 //x and y are coordinates, speed is the speed determined by FPS
 //use movement to determine which way the player goes
@@ -284,7 +365,7 @@ function bullet(x,y,speed){
 	this.speed = speed;
 
 	this.draw = function(){
-        ctx.drawImage(bulletImg,this.x,this.y,this.w,this.h);
+        ctx.drawImage(bulletImg,this.x,this.y-doge.w,this.w,this.h);
 	}
 
 	this.update = function(){
@@ -354,6 +435,7 @@ maxMemes = 10;
 var checktoGenerate = function(time){
 	if(nowGenerate > 100){
 		if(0<monstersCaught<20){
+			changeCost();
 			if(memes.length < maxMemes){
 			generateMemes(holes,1);
 			generateMemes(memes,2);
@@ -476,8 +558,11 @@ var update = function (modifier) {
 		doge.x += doge.speed * modifier;
 	}
 	if (32 in keysDown) { // Player pressed space 
-		doge.shoot();
+		if(blaster){
+			doge.shoot();
+		}
 	}
+
 
 	offScreen(doge,canvas);
 
@@ -512,6 +597,7 @@ function drawCircle(x,y,radius, width){
 	ctx.strokeStyle="#0000FF";
 	ctx.stroke();
 }
+
 function clearCircle( x , y , r ){
     for( var i = 0 ; i < Math.round( Math.PI * r ) ; i++ ){
         var angle = ( i / Math.round( Math.PI * r )) * 360;
@@ -530,6 +616,7 @@ function clearCircle( x , y , r ){
 	}
 	
   }
+
   for(var i=0;i<holes.length;i++){
 	if (collideswith(doge,holes[i])
 ) {
@@ -550,8 +637,11 @@ function clearCircle( x , y , r ){
 	if(extraLives[i].img == heartImage){
 		livesLeft ++;
 	}
-	else{
+	if(extraLives[i].img == shieldImage){
 		shield =true;
+	}
+	else{
+		blaster =true;
 	}
 	removeItem(extraLives,i);
 }
@@ -665,8 +755,21 @@ var startGame= function () {
 	gameStart = true;
 	hideElement("startBtn");
 	hideElement("welcome");
+	drawBoard();
 	main();
 };	
+
+function togglePause()
+{
+    if (!paused)
+    {
+        paused = true;
+    } else if (paused)
+    {
+       paused= false;
+    }
+
+}
 
 //display score
 var displayScore= function (monstersCaught) {
